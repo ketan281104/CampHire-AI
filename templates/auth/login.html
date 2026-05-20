@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In | CampHire AI{% endblock %}
+
+{% block content %}
+<div class="form-container" style="margin-top: 60px;">
+    <h2 style="font-weight: 700; margin-bottom: 30px;">Log In</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+    </form>
+    <p style="margin-top: 20px;">Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+</div>
+{% endblock %}

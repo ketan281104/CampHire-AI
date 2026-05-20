@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wellness - CampHire AI{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 60px; padding-bottom: 60px;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 15px;">Mental <span class="text-gradient">Wellness</span></h1>
+        <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">
+            Your mental health matters. Whether you need professional guidance or a quick chat to destress, we're here for you.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        
+        <!-- Option 1: Expert -->
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🧘‍♂️</div>
+            <h3 style="margin-bottom: 15px; color: var(--text-main);">Connect with Expert</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">
+                Schedule a 1-on-1 session with a certified counselor. 
+                Perfect for deep-diving into stress management.
+            </p>
+            <a href="{% url 'book_therapy_session' %}" class="btn-primary" style="background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color) !important; padding: 10px 30px;">
+                Schedule Session
+            </a>
+        </div>
+
+        <!-- Option 2: AI Voice -->
+        <div class="card" style="text-align: center; position: relative;">
+            <div style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: bold;">Live</div>
+            <div style="font-size: 3rem; margin-bottom: 20px;">🎧</div>
+            <h3 style="margin-bottom: 15px; color: var(--text-main);">AI Voice Counselor</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">
+                Talk naturally with our empathetic AI voice assistant. 
+                Voice your thoughts and get instant guidance.
+            </p>
+            {% if therapist_url and therapist_url != '#' %}
+                <a href="{{ therapist_url }}" class="btn-primary" target="_blank">Start Voice Session</a>
+            {% else %}
+               <a href="#" onclick="alert('Voice service is currently configuring. Please try again later.'); return false;" class="btn-primary" style="filter: grayscale(1); opacity: 0.7;">Coming Soon</a>
+            {% endif %}
+        </div>
+
+        <!-- Option 3: AI Chat -->
+        <div class="card" style="text-align: center; position: relative;">
+            <div style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #000; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: bold;">24/7</div>
+            <div style="font-size: 3rem; margin-bottom: 20px;">💬</div>
+            <h3 style="margin-bottom: 15px; color: var(--text-main);">Chat with AI</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">
+                Prefer texting? Have a judgment-free conversation with our AI companion anytime, anywhere.
+            </p>
+            <a href="{% url 'ai_therapist_view' %}" class="btn-primary">Start Chat</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

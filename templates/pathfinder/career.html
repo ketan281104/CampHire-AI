@@ -1,0 +1,155 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% block title %}Custom Path AI | CampHire AI{% endblock %} 
+
+{% block content %}
+<div class="assessment-wrapper">
+    <!-- Header -->
+    <div class="assessment-header text-center mb-5">
+        <h1 class="hero-title">Design Your <span class="brand-highlight">Future</span></h1>
+        <p class="hero-subtitle">
+            Tell our AI about your goals. We'll craft a personalized roadmap just for you.
+        </p>
+    </div>
+
+    <div class="glass-card form-container">
+        {% if personality_type %}
+        <div class="personality-badge">
+            <span class="badge-label">Your Archetype:</span>
+            <span class="badge-value">{{ personality_type }}</span>
+        </div>
+        {% endif %}
+
+        {% if has_resume %}
+        <div class="resume-badge">
+            <span class="icon">📄</span> 
+            <span>Resume Analyzed & Attached</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="custom-path-form">
+            {% csrf_token %}
+            
+            {% for q in questions %}
+            <div class="form-group mb-4">
+                <label for="q_{{ q.id }}" class="form-label">{{ q.question_text }}</label>
+                <textarea 
+                    name="career_question_{{ q.id }}" 
+                    id="q_{{ q.id }}" 
+                    class="form-control glass-input" 
+                    rows="3" 
+                    placeholder="E.g. I want to build scalable web apps..."
+                    required></textarea>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                No custom questions configured. You can proceed directly.
+            </div>
+            {% endfor %}
+
+            <div class="form-actions text-center mt-5">
+                <button type="submit" class="btn-primary submit-btn">
+                    Generate My Roadmap <span class="sparkle">✨</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .assessment-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .glass-card {
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 40px;
+    }
+
+    .personality-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(var(--color-primary-rgb), 0.1);
+        border: 1px solid var(--color-primary);
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+    }
+
+    .badge-value {
+        font-weight: bold;
+        color: var(--color-primary);
+    }
+
+    .resume-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(46, 204, 113, 0.1);
+        border: 1px solid #2ecc71;
+        color: #2ecc71;
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        margin-left: 10px;
+    }
+
+    .form-label {
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 8px;
+        width: 100%;
+        padding: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--color-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+    }
+
+    .submit-btn {
+        padding: 15px 40px;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: none;
+        background: var(--color-primary);
+        color: #000;
+    }
+
+    .submit-btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

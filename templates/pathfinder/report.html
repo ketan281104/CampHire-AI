@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Compatibility Report |CampHire AI{% endblock %}
+
+{% block content %}
+<div class="pathfinder-container">
+    <h1>Your Report</h1>
+    {% if company_name %}
+    <h2 style="color: var(--primary-color); margin-top: 10px;">Target: {{ company_name }}</h2>
+    {% endif %}
+</div>
+<!-- templates/report.html -->
+
+<div class="pathfinder-container" style="margin-top: 0;">
+    {% if show_score %}
+    <div class="ats-dashboard" style="box-shadow: none; border: none; padding: 0; background: transparent;">
+        <div class="ats-header">
+            <h2><span class="icon">📊</span> ATS Analysis</h2>
+            <p>Mathematical breakdown of your resume vs. job description</p>
+        </div>
+
+        <div class="ats-grid">
+            <!-- Card 1: The Score -->
+            <div class="ats-card score-card">
+                <h3>Match Score</h3>
+                <div style="font-size: 3rem; font-weight: 800; color: #fff; margin-bottom: 10px;">{{ similarity_score }}%</div>
+                
+                <!-- Horizontal Strip -->
+                <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; margin-bottom: 15px;">
+                    <div class="score-strip-fill" 
+                         style="height: 100%; width: {{ similarity_score|floatformat:"0" }}%; 
+                                background: {% if similarity_score >= 80 %}#28a745{% elif similarity_score >= 50 %}#ffc107{% else %}#dc3545{% endif %};
+                                transition: width 1s ease-in-out;">
+                    </div>
+                </div>
+
+                <p class="score-label">Relevance Probability</p>
+            </div>
+
+            <!-- Card 2: Matching Keywords -->
+            <div class="ats-card keyword-card">
+                <h3>✅ Matched Keywords</h3>
+                <div class="keyword-cloud">
+                    {% for word in matching_keywords %}
+                    <span class="tag match">{{ word }}</span>
+                    {% empty %}
+                    <span class="empty-state">No exact keyword matches found.</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Card 3: Missing Keywords -->
+            <div class="ats-card keyword-card">
+                <h3>⚠️ Missing Keywords</h3>
+                <div class="keyword-cloud">
+                    {% for word in missing_keywords %}
+                    <span class="tag missing">{{ word }}</span>
+                    {% empty %}
+                    <span class="empty-state">Great job! No major keywords missing.</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Apriori Insight -->
+            {% if skill_recommendations %}
+            <div class="ats-card"
+                style="grid-column: 1 / -1; background: rgba(var(--color-accent-rgb), 0.05); border-color: rgba(var(--color-accent-rgb), 0.2);">
+                <h3>🧠 Skill Synergy Suggestions</h3>
+                <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px;">
+                    We detected a pattern using the <strong>Apriori Algorithm</strong> (Association Rule Mining). High-performing candidates
+                    with your profile typically add these complementary skills:
+                </p>
+                <div class="keyword-cloud">
+                    {% for rule in skill_recommendations %}
+                    <div class="tag synergy-tag">
+                        <span>{{ rule.to }}</span>
+                        <span class="synergy-confidence">{{ rule.confidence }}% Confidence</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if company_info %}
+    <div class="ats-dashboard" style="box-shadow: none; border: none; padding: 0; background: transparent; margin-bottom: 30px;">
+        <div class="ats-header">
+            <h2><span class="icon">🏢</span> Company Intelligence</h2>
+            <p>Data sourced from our company database</p>
+        </div>
+        <div class="ats-grid">
+            <div class="ats-card" style="grid-column: 1 / -1;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    {% if company_info.industry %}
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Industry</div>
+                        <div style="font-weight: 600;">{{ company_info.industry }}</div>
+                    </div>
+                    {% endif %}
+                    {% if company_info.headquarters %}
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Headquarters</div>
+                        <div style="font-weight: 600;">{{ company_info.headquarters }}</div>
+                    </div>
+                    {% endif %}
+                    {% if company_info.employee_count %}
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Company Size</div>
+                        <div style="font-weight: 600;">{{ company_info.employee_count }} employees</div>
+                    </div>
+                    {% endif %}
+                    {% if company_info.avg_salary_range %}
+                    <div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">Avg Salary Range</div>
+                        <div style="font-weight: 600;">{{ company_info.avg_salary_range }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if company_info.tech_stack %}
+            <div class="ats-card">
+                <h3>🛠️ Known Tech Stack</h3>
+                <div class="keyword-cloud" style="margin-top: 10px;">
+                    {% for tech in company_info.tech_stack_list %}
+                    <span class="tag match" style="background: rgba(76, 145, 150, 0.15); color: #4C9196; border-color: rgba(76, 145, 150, 0.3);">{{ tech }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if company_info.culture_notes %}
+            <div class="ats-card">
+                <h3>🎯 Culture & Values</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6; margin-top: 10px; opacity: 0.85;">{{ company_info.culture_notes }}</p>
+            </div>
+            {% endif %}
+
+            {% if company_info.interview_process %}
+            <div class="ats-card" style="grid-column: 1 / -1;">
+                <h3>📋 Interview Process</h3>
+                <p style="font-size: 0.9rem; line-height: 1.6; margin-top: 10px; opacity: 0.85;">{{ company_info.interview_process }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="report-content" style="box-shadow: none; border: none; padding: 0; background: transparent;">
+        {{ report_content | safe | linebreaks }}
+    </div>
+
+    <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="{% url 'home' %}"
+            style="padding: 12px 20px; background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); text-decoration: none; border-radius: 8px; font-weight: 600;">
+            Run a New Report
+        </a>
+
+        <button id="saveCompanyBtn" onclick="saveCompanyToProfile()"
+            style="padding: 12px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Save to Profile
+        </button>
+    </div>
+</div>
+
+<script>
+    function saveCompanyToProfile() {
+        const btn = document.getElementById('saveCompanyBtn');
+        const companyName = "{{ company_name|escapejs }}";
+        const score = "{{ similarity_score|default:'' }}";
+        // Get content from the rendered block if trying to save full report, 
+        // OR rely on what was in context. 
+        // Here we will try to grab the raw content if possible or just what is rendered.
+        // A better approach is to send what we have.
+        // Since 'report_content' variable might be huge and contain HTML, we can try to send it.
+        const reportContent = `{{ report_content|escapejs }}`;
+
+        btn.disabled = true;
+        btn.innerText = 'Saving...';
+
+        const formData = new FormData();
+        formData.append('company_name', companyName);
+        formData.append('compatibility_score', score);
+        formData.append('report_content', reportContent);
+
+        fetch('{% url "save_company" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerText = 'Saved ✓';
+                    btn.style.backgroundColor = '#4CAF50';
+                } else {
+                    btn.innerText = 'Save to Profile';
+                    btn.disabled = false;
+                    alert(data.error || 'Failed to save');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                btn.innerText = 'Error';
+                btn.disabled = false;
+            });
+    }
+</script>
+
+<style>
+    .synergy-tag {
+        background: rgba(var(--color-accent-rgb), 0.15);
+        border: 1px solid var(--color-accent);
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 12px;
+    }
+
+    .synergy-confidence {
+        font-size: 0.7em;
+        opacity: 0.9;
+        margin-top: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+{% endblock %}

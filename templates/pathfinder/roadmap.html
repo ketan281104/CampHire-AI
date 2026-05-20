@@ -1,0 +1,121 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Career Roadmap Pathfinder</h3>
+                    <p class="mb-0 small">Powered by Dijkstra's Shortest Path Algorithm</p>
+                </div>
+                <div class="card-body bg-dark text-light">
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row align-items-end">
+                            <div class="col-md-3">
+                                <label for="start_node" class="form-label text-muted small text-uppercase">Start</label>
+                                <select name="start_node" id="start_node"
+                                    class="form-select bg-secondary text-light border-0">
+                                    {% for node in available_nodes %}
+                                    <option value="{{ node }}" {% if node==start_node %}selected{% endif %}>{{ node }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-1 text-center pb-2">→</div>
+                            <div class="col-md-3">
+                                <label for="end_node" class="form-label text-muted small text-uppercase">Target</label>
+                                <select name="end_node" id="end_node"
+                                    class="form-select bg-secondary text-light border-0">
+                                    {% for node in available_nodes %}
+                                    <option value="{{ node }}" {% if node==end_node %}selected{% endif %}>{{ node }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small text-uppercase">Optimization Goal</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="criterion" id="crit_time" value="time"
+                                        {% if criterion=='time' %}checked{% endif %}>
+                                    <label class="btn btn-outline-crimson" for="crit_time">Fastest (Time)</label>
+
+                                    <input type="radio" class="btn-check" name="criterion" id="crit_diff"
+                                        value="difficulty" {% if criterion=='difficulty' %}checked{% endif %}>
+                                    <label class="btn btn-outline-crimson" for="crit_diff">Easiest (Effort)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-crimson w-100">Calculate</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if path_objects %}
+                    <div class="alert alert-success bg-opacity-10 border-success">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="alert-heading mb-0">Optimal Path Found</h4>
+                            <div class="text-end">
+                                <div class="badge bg-success mb-1">Total Limit: {{ primary_cost }}</div>
+                                <div class="badge bg-secondary">Secondary Cost: {{ secondary_cost }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center justify-content-center p-3 rounded"
+                            style="background: rgba(0,0,0,0.2);">
+                            {% for step in path_objects %}
+                            <div class="text-center position-relative group-hover">
+                                <div class="badge fs-5 m-1 px-3 py-2"
+                                    style="background-color: var(--color-primary); position: relative;">
+                                    {{ step.name }}
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+                                        style="font-size: 0.6rem; transform: translate(-30%, -50%) !important;"
+                                        title="PageRank Authority Score">
+                                        {{ step.score }}%
+                                    </span>
+                                </div>
+                                <div class="small text-muted mt-1" style="font-size: 0.7rem;">Rank Score</div>
+                            </div>
+
+                            {% if not forloop.last %}
+                            <span class="fs-4 mx-2 text-muted">→</span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No path found between these skills/roles. Try different combinations.
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <h5>How it works:</h5>
+                        <p class="small text-muted">
+                            This tool models skills and careers as nodes in a directed graph.
+                            Edges represent the learning curve or transition difficulty.
+                            We use <strong>Dijkstra's Algorithm</strong> to mathematically compute the path with the
+                            lowest cumulative weight, ensuring the most efficient route to your goal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-crimson {
+        background-color: #DC143C;
+        color: white;
+        border: none;
+    }
+
+    .btn-crimson:hover {
+        background-color: #B01030;
+        color: white;
+    }
+</style>
+{% endblock %}
